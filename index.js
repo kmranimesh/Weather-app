@@ -7,7 +7,6 @@ const searchForm = document.querySelector("[data-searchForm]");
 const loadingScreen = document.querySelector(".loading-container");
 const userInfoContainer = document.querySelector(".user-info-container");
 
-
 // Dark mode toggle button
 const themeToggleBtn = document.querySelector('.theme-toggle-btn');
 themeToggleBtn.addEventListener('click', toggleTheme);
