@@ -11,8 +11,8 @@ const userInfoContainer = document.querySelector(".user-info-container");
 
 let oldTab = userTab;
 const API_KEY = "b25832a5e0ff3f0b092cf057be0ac669";
-oldTabTab.classList.add("current-tab");
-
+oldTab.classList.add("current-tab");
+getFromSessionStorage();
 
 function switchTab(clickedTab) {
     if (oldTab != newTab) {
@@ -76,10 +76,91 @@ async function fetchUserWeatherInfo(coordinates) {
         loadingScreen.classList.remove("active");
         userContainer.classList.add("active");
         renderWeatherInfo(data);
-
     }
-    catch(err) {
+    catch (err) {
+        loadingScreen.classList.remove("active");
         //Handle errors as needed
+        console.log("Error found", err);
+    }
+}
+
+function renderWeatherInfo(weatherInfo) {
+    // firstly, we need to fetch the elements
+
+    const cityName = document.querySelector("[data-cityName]");
+    const countryIcon = document.querySelector("[data-countryIcon]");
+    const desc = document.querySelector("[data-weatherDesc]");
+    const weatherIcon = document.querySelector("[data-weatherIcon]");
+    const temp = document.querySelector("[data-temp]");
+    const windSpeed = document.querySelector("[data-windSpeed]");
+    const humidity = document.querySelector("[data-humidity]");
+    const cloudiness = document.querySelector("[data-cloudiness]");
+
+
+    // Fetch values from weatherInfo object and put in UI elements
+
+    cityName.innerText = weatherInfo?.name;
+    countryIcon.src = `https://flagcdn.com/144x108/${weatherInfo?.sys?.country.toLowerCase()}.png`;
+    desc.innerText = weatherInfo?.weather?.[0]?.description;
+    weatherIcon.src = `http://openweathermap.org/img/w/${weatherInfo?.weather?.[0]?.icon}.png`;
+    temp.innerText = weatherInfo?.main?.temp;
+    windSpeed.innerText = weatherInfo?.wind?.speed;
+    humidity.innerText = weatherInfo?.main?.humidity;
+    cloudiness.innerText = weatherInfo?.clouds?.all;
+}
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    }
+    else {
+        console.log("No geolocation support available");
+    }
+}
+
+function showPosition(position) {
+
+    const userCoordinates = {
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+    }
+
+    sessionStorage.setItem("user-coordinates", JSON.stringify(userCoordinates));
+    fetchUserWeatherInfo(userCoordinates);
+
+
+}
+
+const grantAccessButton = document.querySelector("[data-grantAccess]");
+grantAccessButton.addEventListener("click", getLocation);
+
+const searchInput = document.querySelector("[data-searchInput]");
+
+searchForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    let cityName = searchInput.value;
+
+    if (cityName === "")
+        return;
+    else
+        fetchSearchWeatherInfo(cityName);
+})
+
+async function fetchSearchWeatherInfo(city) {
+    loadingScreen.classList.add("active");
+    userInfoContainer.classList.remove("active");
+    grantAccessContainer.classList.remove("active");
+
+    try {
+        const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
+        );
+        const data = await response.json();
+        loadingScreen.classList.remove("active");
+        userInfoContainer.classList.add("active");
+        renderWeatherInfo(data);
+    }
+    catch (err) {
         console.log("Error found", err);
     }
 }
