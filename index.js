@@ -7,6 +7,38 @@ const searchForm = document.querySelector("[data-searchForm]");
 const loadingScreen = document.querySelector(".loading-container");
 const userInfoContainer = document.querySelector(".user-info-container");
 
+
+// Dark mode toggle button
+const themeToggleBtn = document.querySelector('.theme-toggle-btn');
+themeToggleBtn.addEventListener('click', toggleTheme);
+
+// Check for saved user theme preference
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.body.classList.add(savedTheme);
+    }
+    updateToggleButton();
+});
+
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark-mode');
+    } else {
+        localStorage.removeItem('theme');
+    }
+    updateToggleButton();
+}
+
+function updateToggleButton() {
+    if (document.body.classList.contains('dark-mode')) {
+        themeToggleBtn.textContent = '🌞';
+    } else {
+        themeToggleBtn.textContent = '🌜';
+    }
+}
+
 //initial variables - needed
 
 let oldTab = userTab;
