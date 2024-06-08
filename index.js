@@ -1,89 +1,86 @@
-console.log('Hello, Animesh');
+const userTab = document.querySelector("[data-userWeather]");
+const searchTab = document.querySelector("[data-searchWeather]");
+const userContainer = document.querySelector(".weather-container");
 
+const grantAccessContainer = document.querySelector(".grant-location-container");
+const searchForm = document.querySelector("[data-searchForm");
+const loadingScreen = document.querySelector(".loading-container");
+const userInfoContainer = document.querySelector(".user-info-container");
+
+//initial variables - needed
+
+let oldTab = userTab;
 const API_KEY = "b25832a5e0ff3f0b092cf057be0ac669";
+oldTabTab.classList.add("current-tab");
 
-function renderWeatherInfo(data) {
-    let newPara = document.createElement('p');
-    let tempInCelsius = data.main.temp - 273.15;
-    newPara.textContent = `${tempInCelsius.toFixed(2)} °C`;
 
-    document.body.appendChild(newPara);
+function switchTab(clickedTab) {
+    if (oldTab != newTab) {
+        //processing will happen
+        oldTab.classList.remove("current-tab");     //removed properties from currentTab
+        oldTab = newTab;
+        oldTab.classList.add("current-tab");    // added properties to clicked tab which is now the current tab
 
+        if (!searchForm.classList.contains("active")) {
+            // Is search form container is invisible, if yes, then make visible
+            userInfoContainer.classList.remove("active");
+            grantAccessContainer.classList.remove("active");
+            // now I'm in user's weather tab, so display weather by checking local storage first for coordinates if we have them saved
+            searchForm.classList.add("active");
+        }
+        else {
+            // previously, search tab was visible, now user's weather tab should be made visible
+            searchForm.classList.remove("active");
+            userInfoContainer.classList.remove("active");
+            getFromSessionStorage();
+        }
+    }
 }
 
-async function fetchWeatherDetails() {
+userTab.addEventListener("click", () => {
+    //pass clicked tab as input parameter
+    switchTab(userTab);
+});
 
+searchTab.addEventListener("click", () => {
+    //pass clicked tab as input parameter
+    switchTab(searchTab);
+});
+
+// check if coordinates are already present in session storage
+function getFromSessionStorage() {
+    const localCoordinates = sessionStorage.getItem("user-coordinates");
+    if (!localCoordinates) {
+        // if local coordinates are not available
+        grantAccessContainer.classList.add("active");
+    }
+    else {
+        const coordinates = JSON.parse(localCoordinates);
+        fetchUserWeatherInfo(coordinates);
+    }
+}
+
+async function fetchUserWeatherInfo(coordinates) {
+    const { lat, lon } = coordinates;
+    // make grantlocation container invisible
+    grantAccessContainer.classList.remove("active");
+    //make loader visible
+    loadingScreen.classList.add("active");
+
+    // API call
     try {
-        let city = "ranchi";
+        let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
 
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${API_KEY}`);
         const data = await response.json();
 
-        console.log("Weather data:-> ", data);
-
+        loadingScreen.classList.remove("active");
+        userContainer.classList.add("active");
         renderWeatherInfo(data);
 
     }
-    catch (err) {
+    catch(err) {
         //Handle errors as needed
         console.log("Error found", err);
     }
 }
 
-async function customWeatherDetails() {
-    try {
-        let latitude = 17.6333;
-        let longitude = 18.3333;
-
-        let result = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`);
-
-        let data = await result.json();
-
-        console.log(data);
-    }
-    catch (err) {
-        console.log("Error found", err);
-    }
-}
-
-function switchTab(clickedTab) {
-
-    apiErrorContainer.classList.remove("active");
-
-    if (clickedTab !== currentTab) {
-        currentTab.classList.remove("current-tab");
-        currentTab = clickedTab;
-        currentTab.classList.add("current-tab");
-
-        if (!searchForm.classList.contains("active")) {
-            userInfoContainer.classList.remove("active");
-            grantAccessContainer.classList.remove("active");
-            searchForm.classList.add("active");
-        }
-        else {
-            searchForm.classList.remove("active");
-            userInfoContainer.classList.remove("active");
-            //getFromSessionStorage();
-        }
-
-        // console.log("Current Tab", currentTab);
-    }
-}
-
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
-    }
-    else {
-        console.log("No geolocation support");
-    }
-}
-
-function showPosition(position) {
-    let lat = position.coords.latitude;
-    let longi = position.coords.longitude;
-
-    console.log(lat);
-    console.log(longi);
-
-}
