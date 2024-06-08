@@ -14,6 +14,7 @@ const API_KEY = "b25832a5e0ff3f0b092cf057be0ac669";
 oldTab.classList.add("current-tab");
 getFromSessionStorage();
 
+
 function switchTab(clickedTab) {
     if (oldTab != newTab) {
         //processing will happen
@@ -164,4 +165,24 @@ async function fetchSearchWeatherInfo(city) {
         console.log("Error found", err);
     }
 }
+
+// Function to update and display the current date and time
+function updateDateTime() {
+    const dateTimeElement = document.querySelector("[data-dateTime]");
+    const now = new Date();
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    };
+    dateTimeElement.textContent = now.toLocaleDateString(undefined, options) + ' ';
+}
+
+// Call the updateDateTime function periodically to keep the date and time updated
+setInterval(updateDateTime, 1000);
+updateDateTime();
 
