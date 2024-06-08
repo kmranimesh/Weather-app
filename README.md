@@ -35,6 +35,8 @@
 - The application is a simple weather application that allows users to view weather information for their current location and search for weather information of multiple locations.
 - It uses the OpenWeatherMap API to fetch weather data.
 - The application supports both light and dark modes.
+- It displays additional weather information such as Humidity, Wind Speed and Clouds.
+- Clean, readable, and maintainable code with comments and documentation.
 - It is built using HTML for structure, CSS for styling, and JavaScript for functionality.
 
 **Technologies Used**:
