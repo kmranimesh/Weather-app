@@ -45,6 +45,7 @@ body.dark-mode {
     align-items: center;
     justify-content: center;
     padding: 1rem;
+    overflow-x: hidden;
 }
 
 body.dark-mode .wrapper {
